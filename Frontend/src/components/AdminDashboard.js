@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 function AdminDashboard() {
   const [categories, setCategories] = useState([]);
@@ -7,14 +7,7 @@ function AdminDashboard() {
 
   const token = localStorage.getItem("adminToken");
 
-  // eslint-disable-next-line
-useEffect(() => {
-  fetchCategories();
-  fetchSkills();
-  fetchRoles();
-}, []);
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     const res = await fetch("http://localhost:8080/api/admin/categories", {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -26,9 +19,9 @@ useEffect(() => {
 
     const data = await res.json();
     setCategories(data);
-  };
+  }, [token]);
 
-  const fetchSkills = async () => {
+  const fetchSkills = useCallback(async () => {
     const res = await fetch("http://localhost:8080/api/admin/skills", {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -40,9 +33,9 @@ useEffect(() => {
 
     const data = await res.json();
     setSkills(data);
-  };
+  }, [token]);
 
-  const fetchRoles = async () => {
+  const fetchRoles = useCallback(async () => {
   const res = await fetch("http://localhost:8080/api/admin/job-roles", {
     headers: { Authorization: `Bearer ${token}` }
   });
@@ -51,7 +44,13 @@ useEffect(() => {
 
   const data = await res.json();
   setRoles(data);
-  };
+  }, [token]);
+
+  useEffect(() => {
+    fetchCategories();
+    fetchSkills();
+    fetchRoles();
+  }, [fetchCategories, fetchSkills, fetchRoles]);
 
   return (
     <div style={styles.container}>
